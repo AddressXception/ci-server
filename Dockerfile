@@ -140,26 +140,39 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
  && rm -rf /etc/apt/sources.list.d/*
 
 # Install .NET Core SDK and initialize package cache
-RUN curl https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb > packages-microsoft-prod.deb \
+RUN curl https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb > packages-microsoft-prod.deb \
  && dpkg -i packages-microsoft-prod.deb \
  && rm packages-microsoft-prod.deb \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
-    apt-transport-https \
     dotnet-sdk-2.2 \
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /etc/apt/sources.list.d/*
 ENV dotnet=/usr/bin/dotnet
 
 # Install AzCopy (depends on .NET Core)
-RUN apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF \
- && echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-bionic-prod/ bionic main" | tee /etc/apt/sources.list.d/azure.list \
- && apt-get update \
- && apt-get install -y --no-install-recommends azcopy \
- && rm -rf /var/lib/apt/lists/* \
- && rm -rf /etc/apt/sources.list.d/*
+RUN curl -sL https://aka.ms/downloadazcopy-v10-linux -o azcopy_linux_amd64_10.1.2.tar.gz \
+ && mkdir -p /usr/local/azcopy10.1.2 \
+ && tar -C /usr/local/azcopy10.1.2 -xzf azcopy_linux_amd64_10.1.2.tar.gz \
+ && rm azcopy_linux_amd64_10.1.2.tar.gz
+
+ENV PATH $PATH:/usr/local/azcopy10.1.2
+
+# https://feedback.azure.com/forums/217298-storage/suggestions/34689574-update-azcopy-packages-for-ubuntu-bionic-18-04
+# https://github.com/MicrosoftDocs/azure-docs/issues/14182
+# RUN apt-key adv --keyserver packages.microsoft.com --recv-keys EB3E94ADBE1229CF \
+#  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-bionic-prod/ bionic main" | tee /etc/apt/sources.list.d/azure.list \
+#  && apt-get update \
+#  && apt-get install -y --no-install-recommends azcopy \
+#  && rm -rf /var/lib/apt/lists/* \
+#  && rm -rf /etc/apt/sources.list.d/*
 
 # Install nvm with node and npm
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 10.15.3
+
+WORKDIR $NVM_DIR
+
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
@@ -213,7 +226,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /etc/apt/sources.list.d/*
 
-# Clean system
+# Clean the system
 RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /etc/apt/sources.list.d/*
