@@ -1,4 +1,5 @@
 #!/bin/bash
 
 ./build-base.sh
-./vsts/build.sh
+cd vsts
+./build.sh

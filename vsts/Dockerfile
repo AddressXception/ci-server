@@ -5,7 +5,7 @@ WORKDIR /root
 RUN mkdir -p /root/.ssh
 RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 
-WORKDIR /
+WORKDIR /vsts
 
 # copy the start script
 COPY ./start.sh .

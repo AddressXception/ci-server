@@ -94,6 +94,9 @@ RUN apt-get update \
 
 RUN usermod -aG docker $(whoami)
 
+# Install docker Compose
+RUN apt install -y --no-install-recommends docker-compose
+
 # Install Go
 RUN curl -sL https://dl.google.com/go/go1.11.9.linux-amd64.tar.gz -o go1.11.9.linux-amd64.tar.gz \
  && mkdir -p /usr/local/go1.11.9 \
@@ -211,6 +214,24 @@ RUN apt-get update \
     python3 \
     python3-pip \
  && rm -rf /var/lib/apt/lists/*
+
+# Install Rust
+# install rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# rustup directory
+ENV PATH /root/.cargo/bin:$PATH
+
+# ENV RUST_TARGETS="x86_64-unknown-linux-gnu"
+
+# # multirust add arm--linux-gnuabhf toolchain
+# RUN rustup target add x86_64-unknown-linux-gnu
+
+# show backtraces
+ENV RUST_BACKTRACE 1
+
+# show tools
+RUN rustc -vV && cargo -V
 
 # Install Terraform
 RUN TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version) \
