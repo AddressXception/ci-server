@@ -50,7 +50,7 @@ data "template_file" "cloud_config" {
     agent_name                        = "${var.vsts_agent_name}"
 
     # specify the env vars that will be passed to docker on startup
-    docker_env_vars                   = "-e VSTS_ACCOUNT=${var.vsts_account} -e VSTS_AGENT=${var.vsts_agent_name} -e VSTS_TOKEN=${var.vsts_token} -e VSTS_POOL=${var.vsts_agent_pool_name} -e VSTS_WORK=/var/vsts"
+    docker_env_vars                   = "-e VSTS_ACCOUNT=${var.vsts_account} -e VSTS_AGENT=${var.vsts_agent_name} -e VSTS_TOKEN=${var.vsts_token} -e VSTS_POOL=${var.vsts_agent_pool_name} -e VSTS_WORK=/var/vsts -v /tmp/vsts/work/:/var/vsts"
 
     registry_server                   = "${var.image_registry_server}"
     registry_username                 = "${var.image_registry_username}"

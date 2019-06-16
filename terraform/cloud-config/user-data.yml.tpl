@@ -104,7 +104,6 @@ write_files:
         ExecStartPre=/usr/bin/docker pull ${registry_agent_image}
         ExecStart=/usr/bin/docker run -di --rm ${docker_env_vars} -v /var/run/docker.sock:/var/run/docker.sock --name ${agent_name} ${registry_agent_image}
         
-        
       [Install]
         WantedBy=default.target
 

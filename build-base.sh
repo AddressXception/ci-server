@@ -1,4 +1,6 @@
 #!/bin/bash
 
 docker rmi ci-server-base
-docker build -t ci-server-base:latest .
+
+docker build \
+    -t ci-server-base:latest .
