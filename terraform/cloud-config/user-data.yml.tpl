@@ -97,16 +97,25 @@ write_files:
       [Service]
         TimeoutStartSec=0
         Restart=always
-        RestartSec=60s
+        RestartSec=10s
         ExecStartPre=-/usr/bin/docker stop ${agent_name}
         ExecStartPre=-/usr/bin/docker rm ${agent_name}
-        ExecStartPre=/usr/bin/docker login -u '${registry_username}' -p '${registry_password}' '${registry_server}'
+        ExecStartPre=/usr/bin/docker login \
+                    -u '${registry_username}' \
+                    -p '${registry_password}' \
+                    '${registry_server}'
         ExecStartPre=/usr/bin/docker pull ${registry_agent_image}
-        ExecStart=/usr/bin/docker run -di --rm ${docker_env_vars} -v /var/run/docker.sock:/var/run/docker.sock --name ${agent_name} ${registry_agent_image}
+        ExecStart=/usr/bin/docker run \
+                    --rm \
+                    ${docker_env_vars} \
+                    -v /var/run/docker.sock:/var/run/docker.sock \
+                    --name ${agent_name} \
+                    ${registry_agent_image}
+        ExecStop=/usr/bin/docker stop ${agent_name}
         
       [Install]
         WantedBy=default.target
-
+        
 runcmd:
   - echo "adding ${admin_username} to docker group"
   - usermod -G docker ${admin_username}
